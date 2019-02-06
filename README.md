@@ -29,7 +29,7 @@ do this if you want to use the automated download feature of this program.
 
 ## Usage
 ```
-usage: survey_search.py [-h] [-s] [-c angle] target
+usage: survey_search.py [-h] [-s] [-c angle] [-d] target
 
 Get field and pixel position of a target.
 
