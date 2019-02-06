@@ -55,3 +55,33 @@ provided to fix these output cubes.
 $ survey_search.py 13:29:53+47:11:43
 $ survey_search.py --cutout 30arcmin --download --simbad m51
 ```
+
+## FAQ
+#### I get this warning:
+```
+WARNING: Couldn't create 'astropy.units.format.cds_parsetab'. [Errno 13] Permission denied: '/usr/lib/python2.7/dist-packages/astropy/units/format/cds_parsetab.py'
+WARNING: Couldn't write lextab module 'astropy.units.format.cds_lextab'. [Errno 13] Permission denied: '/usr/lib/python2.7/dist-packages/astropy/units/format/cds_lextab.py'
+WARNING: Couldn't write lextab module 'astropy.coordinates.angle_lextab'. [Errno 13] Permission denied: '/usr/lib/python2.7/dist-packages/astropy/coordinates/angle_lextab.py'
+WARNING: Couldn't create 'astropy.coordinates.angle_parsetab'. [Errno 13] Permission denied: '/usr/lib/python2.7/dist-packages/astropy/coordinates/angle_parsetab.py'
+```
+This is caused by a bug in older versions of astroquery (including the version
+in Ubuntu 18.04) but it's not a problem and can be ignored.
+
+#### I get this error:
+```
+Traceback (most recent call last):
+  File "./survey_search.py", line 159, in <module>
+    main()
+  File "./survey_search.py", line 131, in main
+    target_offset = target_sc.transform_to(field_sc.skyoffset_frame())
+  File "/usr/lib/python2.7/dist-packages/astropy/coordinates/sky_coordinate.py", line 436, in __getattr__
+    .format(self.__class__.__name__, attr))
+AttributeError: 'SkyCoord' object has no attribute 'skyoffset_frame'
+```
+You're version of astroquery is too old. In this case you can use
+virtual env:
+```
+virtualenv ss2
+ss2/bin/pip install astroquery
+ss2/bin/python survey_search.py 
+```
