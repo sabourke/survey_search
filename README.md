@@ -22,9 +22,9 @@ cp survey_search.py fix_fitscopy_fz.py ~/.local/bin
 To setup passwordless downloading of survey data create a `.netrc` file
 in your home directory and add the following line:
 ```
-machine lofar-surveys.org login surveys password survey_password
+machine lofar-surveys.org login surveys password put_survey_password_here
 ```
-replacing `survey_password` with the actual password. You will need to
+replacing `put_survey_password_here` with the actual password. You will need to
 do this if you want to use the automated download feature of this program.
 
 ## Usage
