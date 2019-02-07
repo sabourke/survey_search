@@ -16,7 +16,12 @@ import sys
 import argparse
 import os.path
 import json
-import urllib2
+try:
+    # Python3
+    from urllib.request import urlopen
+except ImportError:
+    # Python2
+    from urllib2 import urlopen
 import subprocess
 
 
@@ -25,12 +30,11 @@ pointings_url = "http://skogul.oso.chalmers.se/Lofar_Tier1_Survey/status/pointin
 
 def field_coords_rad():
     """Return arrays of 'field names', 'pointing centre', 'status'"""
-    pointings = json.load(urllib2.urlopen(pointings_url))
+    pointings = json.load(urlopen(pointings_url))
     ids = [p[0] for p in pointings]
-    ra = [p[1] for p in pointings]
-    dec = [p[2] for p in pointings]
+    ra_dec = [p[1:3] for p in pointings]
     status = [p[3] for p in pointings]
-    return np.array(ids), np.radians(np.array(zip(ra,dec))), np.array(status)
+    return np.array(ids), np.radians(np.array(ra_dec)), np.array(status)
 
 
 def simbad_object_skycoord(target):
@@ -130,7 +134,7 @@ def main():
         if not args.cutout:
             target_offset = target_sc.transform_to(field_sc.skyoffset_frame())
             pixels = SkyCoord(target_offset.lon, target_offset.lat).to_pixel(survey_wcs())
-            pixels = "[{}:{}]".format(*[int(round(x)) for x in pixels])
+            pixels = "[{}:{}]".format(*[x.round().astype(int) for x in pixels])
             print("# {:>11} {:>11}, Distance: {:3.2f}deg, Status: {}".format(field_name, pixels, distance, status))
             commands = download_commands(field_name, "{}_{}".format(args.target, i))
         else:
@@ -138,12 +142,12 @@ def main():
             pos = SkyCoord(cutout/2, -cutout/2, frame=target_sc.skyoffset_frame())
             pos = pos.transform_to(field_sc.skyoffset_frame())
             pixels = SkyCoord(pos.lon, pos.lat).to_pixel(survey_wcs())
-            ra0, dec0 = [int(round(x)) for x in pixels]
+            ra0, dec0 = [x.round().astype(int) for x in pixels]
 
             pos = SkyCoord(-cutout/2, cutout/2, frame=target_sc.skyoffset_frame())
             pos = pos.transform_to(field_sc.skyoffset_frame())
             pixels = SkyCoord(pos.lon, pos.lat).to_pixel(survey_wcs())
-            ra1, dec1 = [int(round(x)) for x in pixels]
+            ra1, dec1 = [x.round().astype(int) for x in pixels]
 
             region = "[{}:{},{}:{}]".format(ra0, ra1, dec0, dec1)
             print("# {:>11} {:>21}, Distance: {:3.2f}deg, Status: {}".format(field_name, region, distance, status))
